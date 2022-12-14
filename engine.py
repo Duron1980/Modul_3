@@ -7,7 +7,7 @@ def play():
     enemy = Enemy(enemy_health_level)
     player_name = input('Please enter your name: ')
     player = Player(player_name)
-    print('Start position\n'
+    print('Start Game\n'
         f'Health points of {player.player_name} is {player.health_points}\n'
         f'Health points of Enemy is  {enemy.health_points}')
     while True:
