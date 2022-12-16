@@ -3,6 +3,7 @@ import random
 from settings import points, action_hero
 from exceptions import Enemy_down, Game_over
 
+
 class Enemy:
     def __init__(self, level: int):
         self.health_points = level
@@ -10,14 +11,15 @@ class Enemy:
 
     def descrease_health(self):
         self.health_points -= 1
+        if self.health_points == 0:
+            msg = f'Enemy is draw. His heals equal {self.health_points}'
+            raise Enemy_down(msg)
 
     def select_attack(self):
-        self.attack = random.choice(list(action_hero.values()))
-        return self.attack
+        return random.choice(list(action_hero.values()))
 
     def select_defence(self):
-        self.defence = random.choice(list(action_hero.values()))
-        return self.defence
+        return random.choice(list(action_hero.values()))
 
 
 class Player:
@@ -41,33 +43,35 @@ class Player:
             except KeyError:
                 print('You enter wrong value')
 
+    def descrease_health(self):
+        self.health_points -= 1
+        if self.health_points == 0:
+            msg = f'Player {self.player_name} is draw. His heals equal {self.health_points}'
+            raise Game_over(msg)
+
     @staticmethod
-    def fight(attack=None, defence=None):
-        if attack == 'Warrior' and defence == 'Robber' or attack == 'Robber' and defence == 'Wizard' or attack == 'Wizard' and defence == 'Warrior':
+    def fight(attack, defence):
+        if attack == 'Warrior' and defence == 'Robber' or attack == 'Robber' and defence == 'Wizard' \
+                or attack == 'Wizard' and defence == 'Warrior':
             return True
         else:
             return False
 
     def attack(self, enemy_obj: object):
-        rezult_attack = self.fight(attack=self.select_attack(), defence=enemy_obj.select_defence())
-        if rezult_attack:
+        if self.fight(attack=self.select_attack(), defence=enemy_obj.select_defence()):
             enemy_obj.descrease_health()
-            if enemy_obj.health_points == 0:
-                msg = f'Enemy is draw. His heals equal {enemy_obj.health_points}'
-                raise Enemy_down(msg)
             self.health_points += 1
-            print(f'YOUR ATTACK IS SUCCESSFUL! \n {self.player_name} health is: {self.health_points} \n Enemy health is: {enemy_obj.health_points}')
+            print(
+                f'YOUR ATTACK IS SUCCESSFUL! \n {self.player_name} health is: {self.health_points} \n Enemy health is: {enemy_obj.health_points}')
         else:
-            print(f"YOUR ATTACK IS FAILED!\n{self.player_name} health is: {self.health_points} \n Enemy health is: {enemy_obj.health_points}")
+            print(
+                f"YOUR ATTACK IS FAILED!\n{self.player_name} health is: {self.health_points} \n Enemy health is: {enemy_obj.health_points}")
 
     def defence(self, enemy_obj: object):
-        rezult_defence = self.fight(attack=enemy_obj.select_attack(), defence=self.select_defence())
-        if rezult_defence:
-            self.health_points -= 1
-            if self.health_points == 0:
-                msg = f'Player {self.player_name} is draw. His heals equal {self.health_points}'
-                raise Game_over(msg)
-            print(f'YOUR DEFENCE IS FAILED! \n {self.player_name} health is: {self.health_points}\n Enemy health is {enemy_obj.health_points}')
+        if self.fight(attack=enemy_obj.select_attack(), defence=self.select_defence()):
+            self.descrease_health()
+            print(
+                f'YOUR DEFENCE IS FAILED! \n {self.player_name} health is: {self.health_points}\n Enemy health is {enemy_obj.health_points}')
         else:
             print(f"YOUR DEFENCE IS SUCCESSFUL!\n {self.player_name} health is: {self.health_points}"
                   f"\n Enemy health is {enemy_obj.health_points}")
